@@ -1,65 +1,60 @@
-import Image from "next/image";
+import type { Metadata } from "next";
+import { supabase } from "@/lib/supabase";
+import LoungeHero from "@/components/gaminglounge/HeroSection";
+import WhyWild from "@/components/gaminglounge/WhyWild";
+import GameLibrary from "@/components/gaminglounge/GameLibrary";
+import PricingSection from "@/components/gaminglounge/PricingSection";
+import GamingZones from "@/components/gaminglounge/GamingZones";
+import HardwareSpecs from "@/components/gaminglounge/HardwareSpecs";
+import TournamentsCommunity from "@/components/gaminglounge/TournamentsCommunity";
+import LoungeGallery from "@/components/gaminglounge/LoungeGallery";
+import FAQ from "@/components/gaminglounge/FAQ";
+import FinalCTA from "@/components/gaminglounge/FinalCTA";
+import { getDB } from "@/lib/db";
 
-export default function Home() {
+export const metadata: Metadata = {
+  title: "Wild Gaming Cafe | Hyderabad's Premium Gaming Lounge",
+  description:
+    "Hyderabad's premier gaming lounge. 20 high-performance PCs, PS5 Arena, 1 Gbps fiber internet, weekly tournaments and a competitive gaming community.",
+  alternates: {
+    canonical: "/",
+  },
+};
+
+export const revalidate = 0; // Ensure home page always has fresh data
+
+export default async function Home() {
+  const [gamesRes, settingsRes, localDb] = await Promise.all([
+    supabase.from('games').select('*').neq('status', 'Trashed'),
+    supabase.from('settings').select('cms_data').eq('id', 1).single(),
+    getDB()
+  ]);
+  
+  const activeGames = gamesRes.data || [];
+  const cmsData = settingsRes.data?.cms_data || { hero: {}, hardware: {}, pricing: {}, faq: {} };
+  const activeGalleryDb = localDb.gallery?.filter((g: any) => g.status !== 'Trashed').map((g: any) => g.url) || [];
+  const galleryImages = activeGalleryDb.length > 0 ? activeGalleryDb : (cmsData.gallery || []);
+
+  const dynamicFaqItems = cmsData.faq?.q1 ? [
+    { question: cmsData.faq.q1, answer: cmsData.faq.a1 },
+    { question: cmsData.faq.q2, answer: cmsData.faq.a2 },
+    { question: cmsData.faq.q3, answer: cmsData.faq.a3 },
+    { question: cmsData.faq.q4, answer: cmsData.faq.a4 },
+    { question: cmsData.faq.q5, answer: cmsData.faq.a5 },
+  ] : undefined;
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <main>
+      <LoungeHero data={cmsData.hero} />
+      <WhyWild />
+      <GameLibrary games={activeGames} />
+      <PricingSection data={cmsData.pricing} />
+      <GamingZones data={cmsData.zones} />
+      <HardwareSpecs data={cmsData.hardware} />
+      <TournamentsCommunity data={cmsData.community} />
+      <LoungeGallery data={galleryImages} />
+      <FAQ items={dynamicFaqItems} />
+      <FinalCTA />
+    </main>
   );
 }

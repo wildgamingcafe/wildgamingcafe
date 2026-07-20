@@ -1,0 +1,87 @@
+{
+  "events": [],
+  "games": [],
+  "gallery": [],
+  "hallOfFame": [
+    {
+      "id": "7d6b83ef-c8c1-42e1-8767-f594676f408b",
+      "team_name": "Blaze Rappers",
+      "tournament_name": "Clash At Wild",
+      "description": "CHAMPIONS OF CLASH AT WILD ",
+      "image_url": "",
+      "status": "Published",
+      "createdAt": "2026-07-20T09:59:29.648Z"
+    }
+  ],
+  "media": [
+    {
+      "id": "7ddba82b-6cf5-4773-9984-b46df8d4f5aa",
+      "url": "/uploads/WWE2K25-94c4b7bf2e8a96af.jpg",
+      "type": "image",
+      "name": "WWE2K25.jpg",
+      "createdAt": "2026-06-09T08:39:57.958Z",
+      "status": "Trashed"
+    }
+  ],
+  "settings": {
+    "phone": "+91-9381923198",
+    "whatsapp": "919381923198",
+    "instagram": "https://instagram.com/wildgamingcafe",
+    "discord": "https://discord.gg/wildgaming",
+    "address": "209, 2nd Floor, Vaishnavi Lamani Arcade, Kompally, Hyderabad",
+    "openingHours": "Monday – Sunday, 9:00 AM – 11:00 PM"
+  },
+  "registrations": [],
+  "communityMoments": [
+    {
+      "url": "https://res.cloudinary.com/pyxtsol1/image/upload/v1784543727/DSC09666_rtkrt7.jpg",
+      "featured": false,
+      "status": "Published",
+      "id": "2a5f1757-a3e6-41be-85bc-b97469d451cf",
+      "createdAt": "2026-07-20T10:35:28.569Z"
+    },
+    {
+      "url": "https://res.cloudinary.com/pyxtsol1/image/upload/v1784543689/DSC09643_ubmhle.jpg",
+      "featured": false,
+      "status": "Published",
+      "id": "ff899d1c-086c-40af-b2ed-d39622e4f53e",
+      "createdAt": "2026-07-20T10:34:51.291Z"
+    },
+    {
+      "url": "https://res.cloudinary.com/pyxtsol1/image/upload/v1784543667/DSC09625_wu17dp.jpg",
+      "featured": false,
+      "status": "Published",
+      "id": "decc255a-a366-4286-ba0a-2c3a0760cf91",
+      "createdAt": "2026-07-20T10:34:28.969Z"
+    },
+    {
+      "url": "https://res.cloudinary.com/pyxtsol1/image/upload/v1784543646/DSC09639_c6zq1i.jpg",
+      "featured": false,
+      "status": "Published",
+      "id": "f5e1fd18-6686-48b4-8efa-30885e8b4c9c",
+      "createdAt": "2026-07-20T10:34:07.987Z"
+    },
+    {
+      "url": "https://res.cloudinary.com/pyxtsol1/image/upload/v1784543633/DSC09620_de6j9d.jpg",
+      "featured": false,
+      "status": "Published",
+      "id": "07a7b3ee-eaaf-4ef8-b032-54e9798c7a99",
+      "createdAt": "2026-07-20T10:33:55.415Z"
+    },
+    {
+      "url": "https://res.cloudinary.com/pyxtsol1/image/upload/v1784543600/blazerapers_yqixlw.jpg",
+      "featured": false,
+      "status": "Published",
+      "id": "387e70af-5701-401a-acc6-f3b6e987f953",
+      "createdAt": "2026-07-20T10:33:22.831Z"
+    }
+  ],
+  "gameRequests": [
+    {
+      "id": "721ebae2-28eb-496d-97c0-570d063705ef",
+      "name": "Fortnite",
+      "votes": 9,
+      "createdAt": "2026-07-17T10:47:50.232Z"
+    }
+  ]
+}
