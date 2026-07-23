@@ -6,7 +6,7 @@ import GameRequests from "@/components/gaminglounge/GameRequests";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 
-export const revalidate = 0; // Always fetch fresh data
+export const revalidate = 60; // Cache for 60 seconds (massive speed boost)
 
 export const metadata = {
   title: "Game Library | Wild Gaming Cafe",

@@ -9,7 +9,7 @@ import SeasonBanner from "@/components/events/SeasonBanner";
 import { leaderboardData } from "@/data/mockData";
 import { supabase } from "@/lib/supabase";
 
-export const revalidate = 0;
+export const revalidate = 60; // Cache for 60 seconds (massive speed boost)
 
 export const metadata: Metadata = {
   title: "Events Hub | Wild Gaming Cafe",

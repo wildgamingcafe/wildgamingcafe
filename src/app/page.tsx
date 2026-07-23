@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   },
 };
 
-export const revalidate = 0; // Ensure home page always has fresh data
+export const revalidate = 60; // Cache for 60 seconds (massive speed boost)
 
 export default async function Home() {
   const [gamesRes, settingsRes, localDb] = await Promise.all([

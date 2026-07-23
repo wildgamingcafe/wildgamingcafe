@@ -7,7 +7,7 @@ import ConditionalTicker from "@/components/layout/ConditionalTicker";
 import IntroVideo from "@/components/layout/IntroVideo";
 import { supabase } from "@/lib/supabase";
 
-export const revalidate = 0;
+export const revalidate = 60; // Cache layout for 60 seconds (massive speed boost)
 
 const poppins = Poppins({
   weight: ["600"],
