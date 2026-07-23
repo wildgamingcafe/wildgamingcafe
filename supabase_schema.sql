@@ -50,3 +50,20 @@ CREATE POLICY "Allow public read access on gallery" ON gallery FOR SELECT USING 
 CREATE POLICY "Allow anon insert/update/delete on games" ON games FOR ALL USING (true);
 CREATE POLICY "Allow anon insert/update/delete on events" ON events FOR ALL USING (true);
 CREATE POLICY "Allow anon insert/update/delete on gallery" ON gallery FOR ALL USING (true);
+
+-- 7. Registrations Table
+CREATE TABLE registrations (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  event_id UUID REFERENCES events(id) ON DELETE CASCADE,
+  registration_type TEXT NOT NULL,
+  team_name TEXT,
+  captain_details JSONB,
+  teammates_details JSONB,
+  total_price TEXT,
+  payment_status TEXT DEFAULT 'Unpaid',
+  assigned_custom_team TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+ALTER TABLE registrations ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow public insert on registrations" ON registrations FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow anon insert/update/delete on registrations" ON registrations FOR ALL USING (true);

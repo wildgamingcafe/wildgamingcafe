@@ -34,7 +34,14 @@ export default function EventForm({ eventId }: { eventId?: string }) {
     bannerImageId: "",
     bannerImageUrl: "",
     featuredImageId: "",
-    featuredImageUrl: ""
+    featuredImageUrl: "",
+    registrationStartDate: "",
+    registrationEndDate: "",
+    enablePreRegister: false,
+    rescheduleMessage: "",
+    winnersData: { first: "", second: "" },
+    teamSizeLimit: 1,
+    pricePerPlayer: 0
   });
 
   useEffect(() => {
@@ -66,7 +73,14 @@ export default function EventForm({ eventId }: { eventId?: string }) {
             bannerImageId: "",
             bannerImageUrl: data.image_url || "",
             featuredImageId: "",
-            featuredImageUrl: extra.thumbnail_image_url || ""
+            featuredImageUrl: extra.thumbnail_image_url || "",
+            registrationStartDate: extra.registration_start_date ? new Date(extra.registration_start_date).toISOString().slice(0, 16) : "",
+            registrationEndDate: extra.registration_end_date ? new Date(extra.registration_end_date).toISOString().slice(0, 16) : "",
+            enablePreRegister: extra.enable_pre_register || false,
+            rescheduleMessage: extra.reschedule_message || "",
+            winnersData: extra.winners_data || { first: "", second: "" },
+            teamSizeLimit: extra.team_size_limit || 1,
+            pricePerPlayer: extra.price_per_player || (extra.entry_fee ? parseInt(String(extra.entry_fee).replace(/\D/g, ''), 10) || 0 : 0)
           });
         }
         setLoading(false);
@@ -77,7 +91,13 @@ export default function EventForm({ eventId }: { eventId?: string }) {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
-    if (type === "checkbox") {
+    if (name.startsWith("winner_")) {
+      const winnerKey = name.split("_")[1];
+      setFormData(prev => ({ 
+        ...prev, 
+        winnersData: { ...prev.winnersData, [winnerKey]: value } 
+      }));
+    } else if (type === "checkbox") {
       const checked = (e.target as HTMLInputElement).checked;
       setFormData(prev => ({ ...prev, [name]: checked }));
     } else {
@@ -113,6 +133,13 @@ export default function EventForm({ eventId }: { eventId?: string }) {
           registration_link: formData.registrationLink,
           is_featured: formData.featured,
           thumbnail_image_url: formData.featuredImageUrl,
+          registration_start_date: formData.registrationStartDate ? new Date(formData.registrationStartDate).toISOString() : null,
+          registration_end_date: formData.registrationEndDate ? new Date(formData.registrationEndDate).toISOString() : null,
+          enable_pre_register: formData.enablePreRegister,
+          reschedule_message: formData.rescheduleMessage,
+          winners_data: formData.winnersData,
+          team_size_limit: Number(formData.teamSizeLimit),
+          price_per_player: Number(formData.pricePerPlayer),
         })
       };
 
@@ -253,17 +280,66 @@ export default function EventForm({ eventId }: { eventId?: string }) {
             </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="space-y-2">
-              <label className="text-sm font-semibold uppercase text-text-secondary">Prize Pool</label>
+              <label className="text-sm font-semibold uppercase text-text-secondary">Total Prize Pool</label>
               <input name="prizePool" value={formData.prizePool} onChange={handleChange} type="text" placeholder="e.g. ₹50,000" className="w-full bg-[#111111] border border-border rounded p-3 text-white focus:border-accent outline-none" />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-semibold uppercase text-text-secondary">Registration URL</label>
-              <input name="registrationLink" value={formData.registrationLink} onChange={handleChange} type="text" placeholder="https://wa.me/..." className="w-full bg-[#111111] border border-border rounded p-3 text-white focus:border-accent outline-none" />
+              <label className="text-sm font-semibold uppercase text-text-secondary">Price Per Player (₹)</label>
+              <input name="pricePerPlayer" value={formData.pricePerPlayer} onChange={handleChange} type="number" placeholder="500" className="w-full bg-[#111111] border border-border rounded p-3 text-white focus:border-accent outline-none" />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-semibold uppercase text-text-secondary">Team Size Limit</label>
+              <input name="teamSizeLimit" value={formData.teamSizeLimit} onChange={handleChange} type="number" min="1" max="10" className="w-full bg-[#111111] border border-border rounded p-3 text-white focus:border-accent outline-none" />
             </div>
           </div>
+          <div className="space-y-2 mt-4">
+            <label className="text-sm font-semibold uppercase text-text-secondary">Reschedule / Postpone Message</label>
+            <input name="rescheduleMessage" value={formData.rescheduleMessage} onChange={handleChange} type="text" placeholder="e.g. Postponed to next Sunday due to rain" className="w-full bg-[#111111] border border-border rounded p-3 text-white focus:border-accent outline-none" />
+          </div>
         </div>
+
+        {/* Automated Lifecycle (New) */}
+        <div className="bg-surface-100 border border-border p-6 rounded-md space-y-6">
+          <h2 className="text-lg font-bold uppercase tracking-wider text-white border-b border-border pb-2">Automated Registration Lifecycle</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-sm font-semibold uppercase text-text-secondary">Registration Opens</label>
+              <input name="registrationStartDate" value={formData.registrationStartDate} onChange={handleChange} type="datetime-local" className="w-full bg-[#111111] border border-border rounded p-3 text-white focus:border-accent outline-none color-scheme-dark" style={{ colorScheme: 'dark' }} />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-semibold uppercase text-text-secondary">Registration Closes</label>
+              <input name="registrationEndDate" value={formData.registrationEndDate} onChange={handleChange} type="datetime-local" className="w-full bg-[#111111] border border-border rounded p-3 text-white focus:border-accent outline-none color-scheme-dark" style={{ colorScheme: 'dark' }} />
+            </div>
+          </div>
+
+          <div className="flex flex-col pt-2">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" name="enablePreRegister" checked={formData.enablePreRegister} onChange={handleChange} className="w-5 h-5 accent-accent" />
+              <span className="text-sm font-semibold uppercase text-white">Enable Pre-Registration</span>
+            </label>
+            <p className="text-xs text-text-secondary mt-1 ml-8">If enabled, users can pre-register before the 'Registration Opens' date.</p>
+          </div>
+        </div>
+
+        {/* Tournament Results */}
+        {formData.status === "Completed" && (
+          <div className="bg-surface-100 border border-border p-6 rounded-md space-y-6">
+            <h2 className="text-lg font-bold uppercase tracking-wider text-accent border-b border-border pb-2">Tournament Results</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-sm font-semibold uppercase text-text-secondary">1st Place (Winner)</label>
+                <input name="winner_first" value={formData.winnersData.first} onChange={handleChange} type="text" placeholder="Team / Player Name" className="w-full bg-[#111111] border border-border rounded p-3 text-white focus:border-accent outline-none" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-semibold uppercase text-text-secondary">2nd Place (Runner Up)</label>
+                <input name="winner_second" value={formData.winnersData.second} onChange={handleChange} type="text" placeholder="Team / Player Name" className="w-full bg-[#111111] border border-border rounded p-3 text-white focus:border-accent outline-none" />
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Publishing */}
         <div className="bg-surface-100 border border-border p-6 rounded-md space-y-6">

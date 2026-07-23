@@ -13,12 +13,55 @@ const formatTime = (time: string) => {
 };
 
 export default function TournamentCard({ tournament }: { tournament: any }) {
+  let buttonText = "[ REGISTER NOW ]";
+  let isDisabled = false;
+  
+  // Use manual status for visual badge
+  const manualStatus = tournament.status?.toLowerCase() || "";
+  
+  // Automated Button Logic
+  const now = new Date();
+  const startDate = tournament.registration_start_date ? new Date(tournament.registration_start_date) : null;
+  const endDate = tournament.registration_end_date ? new Date(tournament.registration_end_date) : null;
+  const isPreRegEnabled = tournament.enable_pre_register;
+  
+  // Is the event in the past?
+  if (manualStatus === "completed" || manualStatus === "past" || (tournament.date && now > new Date(new Date(tournament.date).getTime() + 86400000))) {
+    buttonText = "[ TOURNAMENT COMPLETED ]";
+    isDisabled = true;
+  }
+  // Has registration window closed?
+  else if (endDate && now > endDate) {
+    buttonText = "[ REGISTRATIONS CLOSED ]";
+    isDisabled = true;
+  }
+  // Is registration currently open?
+  else if (startDate && endDate && now >= startDate && now <= endDate) {
+    buttonText = "[ REGISTRATIONS OPEN ]";
+  }
+  // Registration hasn't started yet
+  else if (startDate && now < startDate) {
+    if (isPreRegEnabled) {
+      buttonText = "[ PRE-REGISTER ]";
+    } else {
+      buttonText = `[ OPENS ${startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} ]`;
+      isDisabled = true; // Wait for it to open
+    }
+  }
+  // Fallback for missing dates but open status
+  else if (manualStatus === "registration open" || manualStatus === "ongoing" || manualStatus === "live") {
+    buttonText = "[ REGISTRATIONS OPEN ]";
+  } else if (manualStatus === "upcoming" || manualStatus === "published") {
+    buttonText = isPreRegEnabled ? "[ PRE-REGISTER ]" : "[ REGISTRATIONS CLOSED ]";
+    if (!isPreRegEnabled) isDisabled = true;
+  }
+
   return (
     <div className="bg-[#111111] border border-[#262626] flex flex-col hover:border-white/20 transition-colors duration-300">
-      <div className="relative h-48 w-full border-b border-[#262626]">
+      <div className="relative aspect-video w-full border-b border-[#262626] bg-black">
         <Image
-          src={tournament.thumbnail_image_url || tournament.banner_image_url || "/images/placeholder.jpg"}
-          alt={tournament.title}
+          src={tournament.image_url || "/images/PC gaming.webp"}
+          alt={tournament.title || tournament.name}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
           className="object-cover"
@@ -51,6 +94,9 @@ export default function TournamentCard({ tournament }: { tournament: any }) {
             <span className="text-text-secondary">Date</span>
             <span className="text-text-primary font-medium">
               {new Date(tournament.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+              {tournament.reschedule_message && (
+                <span className="block text-xs text-red-500 mt-1">{tournament.reschedule_message}</span>
+              )}
             </span>
           </div>
           <div className="flex items-center justify-between text-sm border-b border-border pb-2">
@@ -71,14 +117,18 @@ export default function TournamentCard({ tournament }: { tournament: any }) {
           </div>
         </div>
 
-        <Link
-          href={tournament.registration_link || `https://wa.me/919381923198?text=Hi! I want to register for ${tournament.title}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="brand-button-secondary w-full py-3 uppercase text-sm text-center block"
-        >
-          [ REGISTER NOW ]
-        </Link>
+        {isDisabled ? (
+          <div className="bg-[#262626] text-text-secondary w-full py-3 uppercase text-sm font-bold text-center block cursor-not-allowed rounded">
+            {buttonText}
+          </div>
+        ) : (
+          <Link
+            href={`/events/${tournament.id}/register`}
+            className="brand-button-secondary w-full py-3 uppercase text-sm font-bold text-center block"
+          >
+            {buttonText}
+          </Link>
+        )}
       </div>
     </div>
   );

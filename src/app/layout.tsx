@@ -4,6 +4,7 @@ import "./globals.css";
 import ConditionalNavbar from "@/components/layout/ConditionalNavbar";
 import ConditionalFooter from "@/components/layout/ConditionalFooter";
 import ConditionalTicker from "@/components/layout/ConditionalTicker";
+import IntroVideo from "@/components/layout/IntroVideo";
 import { supabase } from "@/lib/supabase";
 
 export const revalidate = 0;
@@ -41,6 +42,7 @@ export default async function RootLayout({
       className={`${poppins.variable} ${montserrat.variable} antialiased`}
     >
       <body className="min-h-screen flex flex-col font-sans" suppressHydrationWarning>
+        <IntroVideo />
         <ConditionalTicker active={tickerActive} text={tickerText} />
         <ConditionalNavbar />
         <main className="flex-grow flex flex-col">

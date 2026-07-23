@@ -1,6 +1,7 @@
 import LibraryHero from "@/components/gamelibrary/LibraryHero";
 import GenreNav from "@/components/gamelibrary/GenreNav";
-import InfiniteGameRow from "@/components/gamelibrary/InfiniteGameRow";
+import CoverFlowFeatured from "@/components/gamelibrary/CoverFlowFeatured";
+import MasonryGameGrid from "@/components/gamelibrary/MasonryGameGrid";
 import GameRequests from "@/components/gaminglounge/GameRequests";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
@@ -54,22 +55,24 @@ export default async function GameLibraryPage() {
       {/* Main Layout (Banners Removed) */}
       <div className="w-full relative">
         
-        {/* Center Content */}
-        <div className="w-full overflow-x-hidden">
+        <div className="w-full overflow-x-hidden container mx-auto px-4 md:px-8 mt-12">
           {/* Featured Section */}
           {featuredGames.length > 0 && (
-            <InfiniteGameRow 
-              id="featured" 
-              title="Featured Games" 
-              games={featuredGames.map(g => ({
-                id: g.id,
-                title: g.title,
-                genre: g.genre,
-                platforms: g.platform.split(',').map((p: string) => p.trim()),
-                coverImage: g.image_url,
-                bgImage: g.image_url
-              }))} 
-            />
+            <div id="featured">
+              <h2 className="text-3xl md:text-4xl font-black uppercase mb-4 border-l-4 border-accent pl-4 text-white">
+                Featured Games
+              </h2>
+              <CoverFlowFeatured 
+                games={featuredGames.map(g => ({
+                  id: g.id,
+                  title: g.title,
+                  genre: g.genre,
+                  platforms: g.platform.split(',').map((p: string) => p.trim()),
+                  coverImage: g.image_url,
+                  bgImage: g.image_url
+                }))} 
+              />
+            </div>
           )}
 
           {/* Genre Rows */}
@@ -78,19 +81,19 @@ export default async function GameLibraryPage() {
             if (!rowGames || rowGames.length === 0) return null;
             
             return (
-              <InfiniteGameRow 
-                key={genre}
-                id={`genre-${genre.toLowerCase().replace(/\s+/g, '-')}`}
-                title={genre}
-                games={rowGames.map(g => ({
-                  id: g.id,
-                  title: g.title,
-                  genre: g.genre,
-                  platforms: g.platform.split(',').map((p: string) => p.trim()),
-                  coverImage: g.image_url,
-                  bgImage: g.image_url
-                }))}
-              />
+              <div id={`genre-${genre.toLowerCase().replace(/\s+/g, '-')}`} key={genre}>
+                <MasonryGameGrid 
+                  genre={genre}
+                  games={rowGames.map(g => ({
+                    id: g.id,
+                    title: g.title,
+                    genre: g.genre,
+                    platforms: g.platform.split(',').map((p: string) => p.trim()),
+                    coverImage: g.image_url,
+                    bgImage: g.image_url
+                  }))}
+                />
+              </div>
             );
           })}
 

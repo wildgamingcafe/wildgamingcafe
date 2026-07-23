@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import HeroSection from "@/components/events/HeroSection";
-import FeaturedTournament from "@/components/events/FeaturedTournament";
-import UpcomingTournaments from "@/components/events/UpcomingTournaments";
+import TournamentShowcase from "@/components/events/TournamentShowcase";
+import PaginatedEventGrid from "@/components/events/PaginatedEventGrid";
 import LeaderboardPreview from "@/components/events/LeaderboardPreview";
 import HallOfFamePreview from "@/components/events/HallOfFamePreview";
 import CommunityGallery from "@/components/events/CommunityGallery";
@@ -17,39 +17,35 @@ export const metadata: Metadata = {
 };
 
 export default async function EventsPage() {
-  const [{ data: events, error }, { data: settingsRes }] = await Promise.all([
-    supabase
-      .from('events')
-      .select('*')
-      .neq('status', 'Trashed')
-      .order('created_at', { ascending: false }),
+  const [
+    { data: ongoingData },
+    { data: upcomingData },
+    { data: recentData },
+    { data: archiveData },
+    { data: settingsRes }
+  ] = await Promise.all([
+    supabase.from('events').select('*').in('status', ['Ongoing', 'Registration Open', 'Live']).order('created_at', { ascending: false }).limit(3),
+    supabase.from('events').select('*').in('status', ['Upcoming', 'Published']).order('created_at', { ascending: false }).limit(6),
+    supabase.from('events').select('*').eq('status', 'Completed').order('created_at', { ascending: false }).limit(4),
+    supabase.from('events').select('*').neq('status', 'Trashed').order('created_at', { ascending: false }).limit(10),
     supabase.from('settings').select('cms_data').eq('id', 1).single()
   ]);
 
   const cmsData = settingsRes?.cms_data || {};
 
-  if (error) {
-    console.error("Failed to fetch events:", error);
-  }
-
-  const activeEvents = (events || []).map(event => {
+  // Helper to parse rules for display
+  const formatEvents = (arr: any[]) => (arr || []).map(event => {
     let extra: any = {};
     try {
       if (event.rules) extra = JSON.parse(event.rules);
     } catch(e) {}
-    // Map DB fields to the expected component format
-    return { 
-      ...event, 
-      ...extra,
-      title: event.name 
-    };
+    return { ...event, ...extra, title: event.name };
   });
 
-  // Find the featured event (first one that has is_featured = true)
-  const featuredEvent = activeEvents.find(t => t.is_featured) || activeEvents[0];
-  
-  // All other events
-  const upcomingEvents = activeEvents.filter(t => t.id !== featuredEvent?.id);
+  const ongoingEvents = formatEvents(ongoingData || []);
+  const upcomingEvents = formatEvents(upcomingData || []);
+  const recentEvents = formatEvents(recentData || []);
+  const initialArchive = formatEvents(archiveData || []);
 
   return (
     <>
@@ -57,8 +53,12 @@ export default async function EventsPage() {
         mediaUrl={cmsData.events_hero?.media_url} 
         alignment={cmsData.events_hero?.alignment}
       />
-      {featuredEvent && <FeaturedTournament tournament={featuredEvent} />}
-      {upcomingEvents.length > 0 && <UpcomingTournaments tournaments={upcomingEvents} />}
+      <TournamentShowcase 
+        ongoing={ongoingEvents}
+        upcoming={upcomingEvents}
+        recent={recentEvents}
+      />
+      <PaginatedEventGrid initialEvents={initialArchive} />
       <LeaderboardPreview leaderboard={leaderboardData} />
       {/* <SeasonBanner /> */}
       <HallOfFamePreview />

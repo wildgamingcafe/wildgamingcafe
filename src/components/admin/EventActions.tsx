@@ -1,7 +1,8 @@
 "use client";
 
-import { Edit, Trash2 } from "lucide-react";
+import { Edit, Trash2, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 
 export default function EventActions({ eventId }: { eventId: string }) {
@@ -28,6 +29,13 @@ export default function EventActions({ eventId }: { eventId: string }) {
 
   return (
     <div className="flex justify-end gap-2">
+      <Link 
+        href={`/admin/events/${eventId}/registrations`}
+        className="p-2 bg-accent/10 text-accent rounded hover:bg-accent/20 transition-colors" 
+        title="Registrations & Matchmaker"
+      >
+        <Users className="w-4 h-4" />
+      </Link>
       <button 
         onClick={handleUpdate}
         className="p-2 bg-white/10 text-white rounded hover:bg-white/20 transition-colors" 
