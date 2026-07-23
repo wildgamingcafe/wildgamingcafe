@@ -20,12 +20,13 @@ export default function AdminHallOfFamePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
   
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<HallOfFameItem>({
     id: "",
     team_name: "",
     tournament_name: "",
     description: "",
     image_url: "",
+    status: "Published",
     featured: false,
   });
 
@@ -91,7 +92,7 @@ export default function AdminHallOfFamePage() {
         </div>
         <button 
           onClick={() => {
-            setFormData({ id: "", team_name: "", tournament_name: "", description: "", image_url: "", featured: false });
+            setFormData({ id: "", team_name: "", tournament_name: "", description: "", image_url: "", status: "Published", featured: false });
             setIsModalOpen(true);
           }}
           className="flex items-center gap-2 bg-[#F4B000] text-black px-4 py-2 rounded-md font-bold uppercase text-sm hover:bg-[#E0A300] transition-colors"
