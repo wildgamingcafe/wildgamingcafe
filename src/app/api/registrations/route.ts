@@ -13,8 +13,18 @@ export async function POST(req: Request) {
     const body = await req.json();
     
     // Validate
-    if (!body.event_id || !body.registration_type || !body.captain_details) {
+    if (!body.event_id || !body.registration_type || !body.captain_details || !body.captain_details.email) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    // 0. Check for duplicate email in the same event
+    const { count: emailCount } = await supabase.from('registrations')
+      .select('*', { count: 'exact', head: true })
+      .eq('event_id', body.event_id)
+      .contains('captain_details', { email: body.captain_details.email });
+
+    if (emailCount && emailCount > 0) {
+      return NextResponse.json({ error: 'This email is already registered for this event.' }, { status: 400 });
     }
 
     // 1. Fetch Event Details for Token Generation

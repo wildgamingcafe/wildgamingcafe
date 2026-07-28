@@ -66,14 +66,17 @@ export default function DynamicRegistrationForm({ event, isPreReg }: { event: an
         body: JSON.stringify(payload)
       });
 
-      if (!response.ok) throw new Error("Failed to submit");
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to submit registration");
+      }
       
       const resData = await response.json();
       setSuccessToken(resData.token);
       setIsSuccess(true);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      alert("Something went wrong. Please try again.");
+      alert(error.message || "Something went wrong. Please try again.");
       setIsSubmitting(false);
     }
   };
@@ -178,7 +181,10 @@ export default function DynamicRegistrationForm({ event, isPreReg }: { event: an
             </div>
             <div className="space-y-2">
               <label className="text-xs font-bold uppercase text-text-secondary tracking-wider">Phone Number *</label>
-              <input required value={captain.phone} onChange={e => setCaptain({...captain, phone: e.target.value})} type="tel" className="w-full bg-[#050505] border border-[#262626] rounded p-4 text-white focus:border-accent outline-none" placeholder="+91 XXXXX XXXXX" />
+              <input required value={captain.phone} onChange={e => {
+                const val = e.target.value.replace(/[^0-9+\s-]/g, '');
+                setCaptain({...captain, phone: val});
+              }} type="tel" pattern="^\+?[0-9\s\-]{10,}$" title="Please enter a valid phone number (digits only)" className="w-full bg-[#050505] border border-[#262626] rounded p-4 text-white focus:border-accent outline-none" placeholder="+91 XXXXX XXXXX" />
             </div>
             <div className="space-y-2 md:col-span-2">
               <label className="text-xs font-bold uppercase text-text-secondary tracking-wider">In-Game Name (IGN) *</label>
