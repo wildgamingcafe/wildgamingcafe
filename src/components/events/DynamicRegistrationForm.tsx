@@ -19,10 +19,11 @@ export default function DynamicRegistrationForm({ event, isPreReg }: { event: an
   const [regType, setRegType] = useState<"solo" | "team">(teamSizeLimit > 1 ? "team" : "solo");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [successToken, setSuccessToken] = useState<string | null>(null);
 
   // Form State
   const [teamName, setTeamName] = useState("");
-  const [captain, setCaptain] = useState({ name: "", phone: "", ign: "" });
+  const [captain, setCaptain] = useState({ name: "", phone: "", ign: "", email: "" });
   const [teammates, setTeammates] = useState([{ name: "", ign: "" }]);
 
   const handleAddTeammate = () => {
@@ -67,6 +68,8 @@ export default function DynamicRegistrationForm({ event, isPreReg }: { event: an
 
       if (!response.ok) throw new Error("Failed to submit");
       
+      const resData = await response.json();
+      setSuccessToken(resData.token);
       setIsSuccess(true);
     } catch (error) {
       console.error(error);
@@ -77,12 +80,27 @@ export default function DynamicRegistrationForm({ event, isPreReg }: { event: an
 
   if (isSuccess) {
     return (
-      <div className="bg-[#111] border border-accent/30 rounded-xl p-12 text-center flex flex-col items-center">
+      <div className="bg-[#111] border border-accent/30 rounded-xl p-12 text-center flex flex-col items-center shadow-2xl">
         <CheckCircle2 className="w-16 h-16 text-accent mb-4" />
-        <h2 className="text-2xl font-black uppercase text-white mb-2">Registration Confirmed!</h2>
-        <p className="text-text-secondary mb-8 max-w-md mx-auto">
-          Your spot has been secured. Please pay the total amount of <strong className="text-white">₹{totalPrice}</strong> at the counter on the day of the event.
+        <h2 className="text-3xl font-black uppercase text-white mb-2">Registration Confirmed!</h2>
+        
+        <div className="bg-[#050505] border border-[#262626] rounded-lg p-6 my-6 w-full max-w-sm">
+          <div className="text-xs font-bold text-text-secondary uppercase mb-1">Your Token</div>
+          <div className="text-4xl font-black text-accent tracking-widest">{successToken || "PENDING"}</div>
+          
+          <div className="mt-4 pt-4 border-t border-[#262626]">
+            <div className="text-xs font-bold text-text-secondary uppercase mb-1">Total Amount Due</div>
+            <div className="text-2xl font-black text-white">₹{totalPrice}</div>
+          </div>
+        </div>
+
+        <p className="text-white font-medium mb-2 max-w-md mx-auto">
+          A confirmation email with your token has been sent.
         </p>
+        <p className="text-text-secondary mb-8 max-w-md mx-auto text-sm">
+          <strong className="text-accent">Take a screenshot of this page.</strong> You must show this Token at the counter on the day of the event to pay your fee and secure your bracket slot.
+        </p>
+
         <button 
           onClick={() => router.push('/events')}
           className="brand-button-secondary px-8 py-3 uppercase text-sm font-bold"
@@ -165,6 +183,10 @@ export default function DynamicRegistrationForm({ event, isPreReg }: { event: an
             <div className="space-y-2 md:col-span-2">
               <label className="text-xs font-bold uppercase text-text-secondary tracking-wider">In-Game Name (IGN) *</label>
               <input required value={captain.ign} onChange={e => setCaptain({...captain, ign: e.target.value})} type="text" className="w-full bg-[#050505] border border-[#262626] rounded p-4 text-white focus:border-accent outline-none" placeholder="e.g. TenZ#NA1" />
+            </div>
+            <div className="space-y-2 md:col-span-2">
+              <label className="text-xs font-bold uppercase text-text-secondary tracking-wider">Email Address *</label>
+              <input required value={captain.email} onChange={e => setCaptain({...captain, email: e.target.value})} type="email" className="w-full bg-[#050505] border border-[#262626] rounded p-4 text-white focus:border-accent outline-none" placeholder="gamer@example.com" />
             </div>
           </div>
         </div>
