@@ -69,6 +69,7 @@ export async function POST(req: Request) {
     const emailJsServiceId = process.env.EMAILJS_SERVICE_ID;
     const emailJsTemplateId = process.env.EMAILJS_TEMPLATE_ID;
     const emailJsPublicKey = process.env.EMAILJS_PUBLIC_KEY;
+    const emailJsPrivateKey = process.env.EMAILJS_PRIVATE_KEY;
 
     let emailSent = false;
     if (emailJsServiceId && emailJsTemplateId && emailJsPublicKey && captainDetailsWithToken.email) {
@@ -80,6 +81,7 @@ export async function POST(req: Request) {
             service_id: emailJsServiceId,
             template_id: emailJsTemplateId,
             user_id: emailJsPublicKey,
+            accessToken: emailJsPrivateKey,
             template_params: {
               email: captainDetailsWithToken.email,
               user_name: captainDetailsWithToken.name || "Gamer",
