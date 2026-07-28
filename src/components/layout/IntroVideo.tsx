@@ -8,9 +8,22 @@ export default function IntroVideo() {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    // Only show once per session
-    const hasSeenIntro = sessionStorage.getItem("hasSeenIntro");
-    if (!hasSeenIntro) {
+    // Skip intro entirely on mobile devices
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      return;
+    }
+
+    // Skip if already seen in this specific tab session
+    const hasSeenThisSession = sessionStorage.getItem("hasSeenIntro");
+    if (hasSeenThisSession) {
+      return;
+    }
+
+    // Limit to 3 lifetime views per user
+    const viewsStr = localStorage.getItem("introViews") || "0";
+    const lifetimeViews = parseInt(viewsStr, 10);
+
+    if (lifetimeViews < 3) {
       setShowIntro(true);
       // Fallback timeout in case video fails to load/play
       const timer = setTimeout(() => {
@@ -25,7 +38,14 @@ export default function IntroVideo() {
     setFadingOut(true);
     setTimeout(() => {
       setShowIntro(false);
+      
+      // Mark as seen this session so it doesn't replay on refresh
       sessionStorage.setItem("hasSeenIntro", "true");
+      
+      // Increment lifetime views
+      const viewsStr = localStorage.getItem("introViews") || "0";
+      const lifetimeViews = parseInt(viewsStr, 10);
+      localStorage.setItem("introViews", (lifetimeViews + 1).toString());
     }, 1000); // 1s fade out duration
   };
 
