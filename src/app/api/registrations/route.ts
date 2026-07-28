@@ -71,7 +71,7 @@ export async function POST(req: Request) {
             template_id: emailJsTemplateId,
             user_id: emailJsPublicKey,
             template_params: {
-              to_email: captainDetailsWithToken.email,
+              email: captainDetailsWithToken.email,
               user_name: captainDetailsWithToken.name || "Gamer",
               tournament_name: eventData?.name || "Tournament",
               token: generatedToken,
