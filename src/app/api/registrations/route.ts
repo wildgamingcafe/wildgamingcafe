@@ -10,8 +10,26 @@ function getInitials(str: string) {
   return words.map(w => w[0]).join('').toUpperCase().substring(0, 4);
 }
 
+const rateLimitMap = new Map<string, { count: number; timestamp: number }>();
+const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
+const MAX_REQUESTS = 5;
+
 export async function POST(req: Request) {
   try {
+    const ip = req.headers.get('x-forwarded-for') || 'unknown';
+    if (ip !== 'unknown') {
+      const now = Date.now();
+      const record = rateLimitMap.get(ip);
+      if (record && now - record.timestamp < RATE_LIMIT_WINDOW) {
+        if (record.count >= MAX_REQUESTS) {
+          return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 });
+        }
+        record.count += 1;
+      } else {
+        rateLimitMap.set(ip, { count: 1, timestamp: now });
+      }
+    }
+
     const body = await req.json();
     
     // Validate
@@ -19,8 +37,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // 0. Check for duplicate email in the same event (TEMPORARILY DISABLED FOR TESTING)
-    /*
+    // 0. Check for duplicate email in the same event
     const { count: emailCount } = await supabase.from('registrations')
       .select('*', { count: 'exact', head: true })
       .eq('event_id', body.event_id)
@@ -29,7 +46,16 @@ export async function POST(req: Request) {
     if (emailCount && emailCount > 0) {
       return NextResponse.json({ error: 'This email is already registered for this event.' }, { status: 400 });
     }
-    */
+
+    // 0.5. Check for duplicate phone in the same event
+    const { count: phoneCount } = await supabase.from('registrations')
+      .select('*', { count: 'exact', head: true })
+      .eq('event_id', body.event_id)
+      .contains('captain_details', { phone: body.captain_details.phone });
+
+    if (phoneCount && phoneCount > 0) {
+      return NextResponse.json({ error: 'This phone number is already registered for this event.' }, { status: 400 });
+    }
 
     // 1. Fetch Event Details for Token Generation
     const { data: eventData } = await supabase.from('events').select('name, game').eq('id', body.event_id).single();

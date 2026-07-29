@@ -16,6 +16,11 @@ export const metadata: Metadata = {
   title: "Wild Gaming Cafe | Hyderabad's Premium Gaming Lounge",
   description:
     "Hyderabad's premier gaming lounge. 20 high-performance PCs, PS5 Arena, 1 Gbps fiber internet, weekly tournaments and a competitive gaming community.",
+  openGraph: {
+    title: "Wild Gaming Cafe | Hyderabad's Premium Gaming Lounge",
+    description: "Hyderabad's premier gaming lounge. 20 high-performance PCs, PS5 Arena, 1 Gbps fiber internet, weekly tournaments and a competitive gaming community.",
+    url: "https://wildgamingcafe.com",
+  },
   alternates: {
     canonical: "/",
   },

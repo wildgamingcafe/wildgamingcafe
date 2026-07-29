@@ -182,9 +182,9 @@ export default function DynamicRegistrationForm({ event, isPreReg }: { event: an
             <div className="space-y-2">
               <label className="text-xs font-bold uppercase text-text-secondary tracking-wider">Phone Number *</label>
               <input required value={captain.phone} onChange={e => {
-                const val = e.target.value.replace(/[^0-9+\s-]/g, '');
+                const val = e.target.value.replace(/[^0-9+]/g, '');
                 setCaptain({...captain, phone: val});
-              }} type="tel" pattern="^\+?[0-9\s\-]{10,}$" title="Please enter a valid phone number (digits only)" className="w-full bg-[#050505] border border-[#262626] rounded p-4 text-white focus:border-accent outline-none" placeholder="+91 XXXXX XXXXX" />
+              }} type="tel" pattern="^(?:\+91)?[6789]\d{9}$" title="Please enter a valid 10-digit Indian mobile number" className="w-full bg-[#050505] border border-[#262626] rounded p-4 text-white focus:border-accent outline-none" placeholder="+91 9876543210" />
             </div>
             <div className="space-y-2 md:col-span-2">
               <label className="text-xs font-bold uppercase text-text-secondary tracking-wider">In-Game Name (IGN) *</label>

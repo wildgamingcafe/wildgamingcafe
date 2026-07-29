@@ -40,11 +40,7 @@ export const tournamentsData: Tournament[] = [
 ];
 
 export const leaderboardData: LeaderboardEntry[] = [
-  { rank: 1, name: "Blaze Reapers", points: 1000, game: "Valorant" },
-  { rank: 2, name: "Optic Gaming", points: 850, game: "CS2" },
-  { rank: 3, name: "Loud Esports", points: 720, game: "Valorant" },
-  { rank: 4, name: "FC Destroyers", points: 650, game: "FC25" },
-  { rank: 5, name: "Hyd Spartans", points: 500, game: "Mobile" },
+  { rank: 1, name: "Blaze Reapers", points: 1000, game: "Valorant" }
 ];
 
 export const galleryImages = [

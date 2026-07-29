@@ -14,8 +14,10 @@ import {
   Users,
   Award,
   MessageSquarePlus,
-  Aperture
+  Aperture,
+  LogOut
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const NAV_ITEMS = [
   { name: "Overview", href: "/admin", icon: LayoutDashboard },
@@ -32,6 +34,13 @@ const NAV_ITEMS = [
 
 export default function AdminSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await fetch("/api/auth", { method: "DELETE" });
+    router.push("/admin/login");
+    router.refresh();
+  };
 
   return (
     <aside className="w-64 bg-surface-100 border-r border-border h-screen sticky top-0 flex flex-col hidden md:flex">
@@ -73,6 +82,13 @@ export default function AdminSidebar() {
           <Trash2 className="w-5 h-5" />
           <span className="text-sm">Trash</span>
         </Link>
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 px-3 py-3 mt-2 rounded-md transition-colors text-text-secondary hover:text-white hover:bg-white/5"
+        >
+          <LogOut className="w-5 h-5" />
+          <span className="text-sm">Logout</span>
+        </button>
       </div>
     </aside>
   );

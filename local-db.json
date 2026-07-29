@@ -18,7 +18,7 @@
       "tournament_name": "CS2 Weekend Brawl",
       "description": "Dominated the lower bracket run to take the grand finals in a stunning 2-0 sweep.",
       "image_url": "https://res.cloudinary.com/pyxtsol1/image/upload/v1784543633/DSC09620_de6j9d.jpg",
-      "status": "Published",
+      "status": "Trashed",
       "createdAt": "2026-07-21T10:00:00.000Z"
     },
     {
@@ -27,7 +27,7 @@
       "tournament_name": "Valorant Summer Face-off",
       "description": "Incredible clutch plays all weekend long. A true testament to teamwork.",
       "image_url": "https://res.cloudinary.com/pyxtsol1/image/upload/v1784543689/DSC09643_ubmhle.jpg",
-      "status": "Published",
+      "status": "Trashed",
       "createdAt": "2026-07-22T10:00:00.000Z"
     }
   ],

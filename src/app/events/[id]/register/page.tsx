@@ -3,6 +3,33 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Gamepad2, Users, Calendar } from "lucide-react";
 import DynamicRegistrationForm from "@/components/events/DynamicRegistrationForm";
+import type { Metadata } from "next";
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const resolvedParams = await params;
+  const { data: event } = await supabase.from('events').select('name, game, entry_fee, image_url, thumbnail_image_url').eq('id', resolvedParams.id).single();
+  
+  if (!event) return { title: "Event Not Found" };
+
+  const description = `Join the upcoming ${event.game} tournament at Wild Gaming Cafe. Secure your spot now!`;
+  const image = event.thumbnail_image_url || event.image_url || "https://res.cloudinary.com/pyxtsol1/image/upload/v1784543667/DSC09625_wu17dp.jpg";
+
+  return {
+    title: `Register: ${event.name}`,
+    description,
+    openGraph: {
+      title: `${event.name} - ${event.game} Tournament`,
+      description,
+      images: [image],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${event.name} - ${event.game} Tournament`,
+      description,
+      images: [image],
+    }
+  };
+}
 
 export const dynamic = 'force-dynamic';
 
