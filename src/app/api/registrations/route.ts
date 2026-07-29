@@ -74,7 +74,9 @@ export async function POST(req: Request) {
     const emailJsPrivateKey = process.env.EMAILJS_PRIVATE_KEY;
 
     let emailSent = false;
-    if (emailJsServiceId && emailJsTemplateId && emailJsPublicKey && captainDetailsWithToken.email) {
+    if (!emailJsServiceId || !emailJsTemplateId || !emailJsPublicKey || !emailJsPrivateKey) {
+      console.error("EmailJS Environment Variables are missing!", { service: !!emailJsServiceId, template: !!emailJsTemplateId, public: !!emailJsPublicKey, private: !!emailJsPrivateKey });
+    } else if (captainDetailsWithToken.email) {
       try {
         const emailRes = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
           method: 'POST',
@@ -93,9 +95,16 @@ export async function POST(req: Request) {
             }
           })
         });
-        if (emailRes.ok) emailSent = true;
+        
+        if (emailRes.ok) {
+          emailSent = true;
+          console.log("EmailJS successfully sent email to:", captainDetailsWithToken.email);
+        } else {
+          const errorText = await emailRes.text();
+          console.error("EmailJS API rejected the request:", errorText);
+        }
       } catch (err) {
-        console.error("Failed to send EmailJS:", err);
+        console.error("Failed to send EmailJS (Network Error):", err);
       }
     }
 
