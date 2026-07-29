@@ -3,7 +3,9 @@ import { supabase } from '@/lib/supabase';
 
 function getInitials(str: string) {
   if (!str) return 'XX';
-  const words = str.split(' ').filter(w => w.trim().length > 0);
+  const cleanStr = str.replace(/[^a-zA-Z0-9\s]/g, '');
+  const words = cleanStr.split(' ').filter(w => w.trim().length > 0);
+  if (words.length === 0) return 'XX';
   if (words.length === 1) return words[0].substring(0, 3).toUpperCase();
   return words.map(w => w[0]).join('').toUpperCase().substring(0, 4);
 }
